@@ -60,7 +60,7 @@ class NatureCNN(BaseFeaturesExtractor):
         This corresponds to the number of unit for the last layer.
     """
 
-    def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 512):
+    def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 128):
         super(NatureCNN, self).__init__(observation_space, features_dim)
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
@@ -68,7 +68,7 @@ class NatureCNN(BaseFeaturesExtractor):
         n_input_channels = observation_space.shape[0]
         self.cnn = nn.Sequential(
             # nn.Conv2d(n_input_channels, 32, kernel_size=8, stride=4, padding=0),
-            nn.Conv2d(n_input_channels, 32, kernel_size=2, stride=2, padding=0),
+            nn.Conv2d(n_input_channels, 32, kernel_size=2, stride=1, padding=0),
             nn.ReLU(),
             # nn.Conv2d(32, 64, kernel_size=4, stride=2, padding=0),
             # nn.ReLU(),
