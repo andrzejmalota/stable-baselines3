@@ -4,7 +4,7 @@ import gym
 import torch as th
 from torch import nn
 
-from stable_baselines3.common.policies import BasePolicy, register_policy
+from stable_baselines3.common.policies import BasePolicy
 from stable_baselines3.common.torch_layers import (
     BaseFeaturesExtractor,
     CombinedExtractor,
@@ -37,7 +37,7 @@ class QNetwork(BasePolicy):
         activation_fn: Type[nn.Module] = nn.ReLU,
         normalize_images: bool = True,
     ):
-        super(QNetwork, self).__init__(
+        super().__init__(
             observation_space,
             action_space,
             features_extractor=features_extractor,
@@ -66,7 +66,7 @@ class QNetwork(BasePolicy):
         return self.q_net(self.extract_features(obs))
 
     def _predict(self, observation: th.Tensor, deterministic: bool = True) -> th.Tensor:
-        q_values = self.forward(observation)
+        q_values = self(observation)
         # Greedy action
         action = q_values.argmax(dim=1).reshape(-1)
         return action
@@ -118,7 +118,7 @@ class DQNPolicy(BasePolicy):
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        super(DQNPolicy, self).__init__(
+        super().__init__(
             observation_space,
             action_space,
             features_extractor_class,
@@ -152,6 +152,8 @@ class DQNPolicy(BasePolicy):
         """
         Create the network and the optimizer.
 
+        Put the target network into evaluation mode.
+
         :param lr_schedule: Learning rate schedule
             lr_schedule(1) is the initial learning rate
         """
@@ -159,6 +161,7 @@ class DQNPolicy(BasePolicy):
         self.q_net = self.make_q_net()
         self.q_net_target = self.make_q_net()
         self.q_net_target.load_state_dict(self.q_net.state_dict())
+        self.q_net_target.set_training_mode(False)
 
         # Setup optimizer with initial learning rate
         self.optimizer = self.optimizer_class(self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
@@ -189,6 +192,17 @@ class DQNPolicy(BasePolicy):
             )
         )
         return data
+
+    def set_training_mode(self, mode: bool) -> None:
+        """
+        Put the policy in either training or evaluation mode.
+
+        This affects certain modules, such as batch normalisation and dropout.
+
+        :param mode: if true, set to training mode, else set to evaluation mode
+        """
+        self.q_net.set_training_mode(mode)
+        self.training = mode
 
 
 MlpPolicy = DQNPolicy
@@ -225,7 +239,7 @@ class CnnPolicy(DQNPolicy):
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        super(CnnPolicy, self).__init__(
+        super().__init__(
             observation_space,
             action_space,
             lr_schedule,
@@ -270,7 +284,7 @@ class MultiInputPolicy(DQNPolicy):
         optimizer_class: Type[th.optim.Optimizer] = th.optim.Adam,
         optimizer_kwargs: Optional[Dict[str, Any]] = None,
     ):
-        super(MultiInputPolicy, self).__init__(
+        super().__init__(
             observation_space,
             action_space,
             lr_schedule,
@@ -282,8 +296,3 @@ class MultiInputPolicy(DQNPolicy):
             optimizer_class,
             optimizer_kwargs,
         )
-
-
-register_policy("MlpPolicy", MlpPolicy)
-register_policy("CnnPolicy", CnnPolicy)
-register_policy("MultiInputPolicy", MultiInputPolicy)

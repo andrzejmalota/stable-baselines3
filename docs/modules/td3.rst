@@ -39,7 +39,7 @@ Can I use?
 ----------
 
 -  Recurrent policies: ❌
--  Multi processing: ❌
+-  Multi processing: ✔️
 -  Gym spaces:
 
 
@@ -57,6 +57,8 @@ Dict          ❌     ✔️
 Example
 -------
 
+This example is only to demonstrate the use of the library and its functions, and the trained agents may not solve the environments. Optimized hyperparameters can be found in RL Zoo `repository <https://github.com/DLR-RM/rl-baselines3-zoo>`_.
+
 .. code-block:: python
 
   import gym
@@ -65,7 +67,7 @@ Example
   from stable_baselines3 import TD3
   from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 
-  env = gym.make("Pendulum-v0")
+  env = gym.make("Pendulum-v1")
 
   # The noise objects for TD3
   n_actions = env.action_space.shape[-1]

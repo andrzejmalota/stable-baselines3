@@ -2,7 +2,7 @@ import os
 
 from setuptools import find_packages, setup
 
-with open(os.path.join("stable_baselines3", "version.txt"), "r") as file_handler:
+with open(os.path.join("stable_baselines3", "version.txt")) as file_handler:
     __version__ = file_handler.read().strip()
 
 
@@ -43,10 +43,10 @@ import gym
 
 from stable_baselines3 import PPO
 
-env = gym.make('CartPole-v1')
+env = gym.make("CartPole-v1")
 
-model = PPO('MlpPolicy', env, verbose=1)
-model.learn(total_timesteps=10000)
+model = PPO("MlpPolicy", env, verbose=1)
+model.learn(total_timesteps=10_000)
 
 obs = env.reset()
 for i in range(1000):
@@ -57,12 +57,12 @@ for i in range(1000):
         obs = env.reset()
 ```
 
-Or just train a model with a one liner if [the environment is registered in Gym](https://github.com/openai/gym/wiki/Environments) and if [the policy is registered](https://stable-baselines3.readthedocs.io/en/master/guide/custom_policy.html):
+Or just train a model with a one liner if [the environment is registered in Gym](https://www.gymlibrary.ml/content/environment_creation/) and if [the policy is registered](https://stable-baselines3.readthedocs.io/en/master/guide/custom_policy.html):
 
 ```python
 from stable_baselines3 import PPO
 
-model = PPO('MlpPolicy', 'CartPole-v1').learn(10000)
+model = PPO("MlpPolicy", "CartPole-v1").learn(10_000)
 ```
 
 """  # noqa:E501
@@ -73,9 +73,9 @@ setup(
     packages=[package for package in find_packages() if package.startswith("stable_baselines3")],
     package_data={"stable_baselines3": ["py.typed", "version.txt"]},
     install_requires=[
-        "gym>=0.17",
+        "gym==0.21",  # Fixed version due to breaking changes in 0.22
         "numpy",
-        "torch>=1.4.0",
+        "torch>=1.11",
         # For saving models
         "cloudpickle",
         # For reading logs
@@ -100,6 +100,8 @@ setup(
             "isort>=5.0",
             # Reformat
             "black",
+            # For toy text Gym envs
+            "scipy>=1.4.1",
         ],
         "docs": [
             "sphinx",
@@ -114,10 +116,14 @@ setup(
             # For render
             "opencv-python",
             # For atari games,
-            "atari_py~=0.2.0",
+            "ale-py==0.7.4",
+            "autorom[accept-rom-license]~=0.4.2",
             "pillow",
             # Tensorboard support
             "tensorboard>=2.2.0",
+            # Protobuf >= 4 has breaking changes
+            # which does play well with tensorboard
+            "protobuf~=3.19.0",
             # Checking memory taken by replay buffer
             "psutil",
         ],
@@ -132,6 +138,14 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     version=__version__,
+    python_requires=">=3.7",
+    # PyPI package information.
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
 )
 
 # python setup.py sdist
