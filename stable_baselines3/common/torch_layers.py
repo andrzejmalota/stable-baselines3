@@ -60,13 +60,8 @@ class NatureCNN(BaseFeaturesExtractor):
         This corresponds to the number of unit for the last layer.
     """
 
-<<<<<<< HEAD
     def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 128):
         super(NatureCNN, self).__init__(observation_space, features_dim)
-=======
-    def __init__(self, observation_space: gym.spaces.Box, features_dim: int = 512):
-        super().__init__(observation_space, features_dim)
->>>>>>> master
         # We assume CxHxW images (channels first)
         # Re-ordering will be done by pre-preprocessing or wrapper
 
